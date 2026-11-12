@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neulight OMS Archive Layer 2 — Documentation</title>
+<style>
+  :root {
+    --ink: #1d2433;
+    --muted: #5b6577;
+    --line: #e3e7ee;
+    --paper: #ffffff;
+    --wash: #f6f8fb;
+    --accent: #1f6f5c;
+    --accent-soft: #e6f2ee;
+    --warn: #8a5a00;
+    --warn-soft: #fff5df;
+    --stop: #9b2c2c;
+    --stop-soft: #fdecec;
+    --code: #0f172a;
+    --code-ink: #e5e9f0;
+    --sidebar: 270px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body {
+    margin: 0;
+    font: 16px/1.6 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--wash);
+  }
+  nav {
+    position: fixed; inset: 0 auto 0 0; width: var(--sidebar);
+    overflow-y: auto; background: var(--paper); border-right: 1px solid var(--line);
+    padding: 28px 20px 40px;
+  }
+  nav .brand { font-weight: 700; font-size: 15px; letter-spacing: .02em; margin-bottom: 4px; }
+  nav .sub { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+  nav ol { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+  nav li { counter-increment: s; }
+  nav a {
+    display: block; padding: 6px 10px; border-radius: 6px;
+    color: var(--ink); text-decoration: none; font-size: 14px;
+  }
+  nav a::before { content: counter(s) ". "; color: var(--muted); }
+  nav a:hover { background: var(--accent-soft); color: var(--accent); }
+  main { margin-left: var(--sidebar); padding: 40px 56px 80px; max-width: calc(var(--sidebar) + 980px); }
+  header.top { margin-bottom: 36px; }
+  header.top h1 { font-size: 30px; line-height: 1.25; margin: 0 0 8px; }
+  header.top p { color: var(--muted); margin: 0; }
+  section {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    padding: 28px 32px; margin-bottom: 24px;
+  }
+  h2 { font-size: 22px; margin: 0 0 14px; }
+  h3 { font-size: 17px; margin: 26px 0 8px; }
+  h4 { font-size: 15px; margin: 18px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  p, li { max-width: 78ch; }
+  a { color: var(--accent); }
+  code {
+    font: 13.5px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: var(--wash); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px;
+  }
+  pre {
+    position: relative; background: var(--code); color: var(--code-ink);
+    border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 10px 0 16px;
+  }
+  pre code { background: none; border: 0; padding: 0; color: inherit; font-size: 13px; }
+  .copy {
+    position: absolute; top: 8px; right: 8px; font-size: 12px; cursor: pointer;
+    background: #24324a; color: #cfd8e3; border: 1px solid #34465f; border-radius: 5px; padding: 3px 8px;
+  }
+  .copy:hover { background: #2e4060; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 18px; font-size: 14.5px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { background: var(--wash); font-weight: 600; }
+  td code { overflow-wrap: anywhere; }
+  .note, .warn, .stop {
+    border-radius: 8px; padding: 12px 16px; margin: 14px 0; border: 1px solid;
+  }
+  .note { background: var(--accent-soft); border-color: #bfdcd2; }
+  .warn { background: var(--warn-soft); border-color: #f0d9a6; color: #4a3500; }
+  .stop { background: var(--stop-soft); border-color: #f2c4c4; color: #5c1a1a; }
+  .flow {
+    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 10px; align-items: center;
+    margin: 18px 0;
+  }
+  .box {
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--wash);
+    text-align: center; font-size: 14px;
+  }
+  .box b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .box.us { background: var(--accent-soft); border-color: #bfdcd2; }
+  .arrow { color: var(--muted); font-size: 22px; text-align: center; }
+  .steps { counter-reset: st; list-style: none; padding-left: 0; }
+  .steps > li { counter-increment: st; position: relative; padding-left: 40px; margin-bottom: 14px; }
+  .steps > li::before {
+    content: counter(st); position: absolute; left: 0; top: 0;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff;
+    font-size: 13px; font-weight: 600; display: grid; place-items: center;
+  }
+  .pill {
+    display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--wash); color: var(--muted);
+  }
+  .pill.on { background: var(--accent-soft); color: var(--accent); border-color: #bfdcd2; }
+  .pill.off { background: var(--warn-soft); color: var(--warn); border-color: #f0d9a6; }
+  details { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  @media (max-width: 900px) {
+    nav { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { margin-left: 0; padding: 24px 16px 60px; }
+    section { padding: 20px; }
+    table { display: block; overflow-x: auto; }
+    .flow { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">Neulight OMS Archive</div>
+  <div class="sub">Layer 2 · Google Sheets → Supabase</div>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#files">Files</a></li>
+    <li><a href="#setup">First-time setup</a></li>
+    <li><a href="#running">Running transfers</a></li>
+    <li><a href="#matching">How rows are matched</a></li>
+    <li><a href="#conversion">How values are converted</a></li>
+    <li><a href="#tables">Table reference</a></li>
+    <li><a href="#control">Control tables</a></li>
+    <li><a href="#monitoring">Checking results</a></li>
+    <li><a href="#maintenance">Maintenance</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#limits">Limits</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="top">
+  <h1>Neulight OMS Archive Layer 2</h1>
+  <p>How the Archive Google Sheet is copied into Supabase, how to run it, and how to keep it working when the sheet changes.</p>
+</header>
+
+<!-- 1 -->
+<section id="overview">
+  <h2>Overview</h2>
+  <p>The Neulight OMS runs on Google Sheets. Old records are moved out of the operational sheets into the <b>Neulight OMS Archive</b> spreadsheet by an existing process (Archive Engine #1). Google Sheets has a 10 million cell limit, so the Archive sheet can't keep everything forever.</p>
+  <p>This project (Archive Engine #2) copies the Archive sheet into a <b>Supabase PostgreSQL</b> database, which becomes the permanent, searchable history. The Archive sheet becomes a waiting area: rows sit there until they are copied, and the existing process can clean the sheet afterwards.</p>
+  <ul>
+    <li>The transfer only <b>reads</b> the Archive sheet. It never edits or deletes cells.</li>
+    <li>It can be run as many times as needed. Rows already stored are skipped, never duplicated.</li>
+    <li>If a stored row's values change in the sheet, the archive keeps the stored version and logs the difference for review. Nothing is silently overwritten.</li>
+    <li>Every run is logged with counts of rows read, inserted, skipped, changed and failed.</li>
+  </ul>
+</section>
+
+<!-- 2 -->
+<section id="architecture">
+  <h2>Architecture</h2>
+  <div class="flow">
+    <div class="box"><b>Operational sheets</b>Live OMS work</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Archive sheet</b>Neulight OMS Archive<br>(waiting area)</div>
+    <div class="arrow">→</div>
+    <div class="box us"><b>Supabase</b>schema <code>archive</code><br>(permanent history)</div>
+  </div>
+  <p>The first arrow is Archive Engine #1, which already exists and is not part of this project. The second arrow is this project:</p>
+  <ol>
+    <li><b>Apps Script</b> in the Archive spreadsheet reads one tab at a time.</li>
+    <li>It maps each header to a table column, converts values, and sends rows in batches of 150.</li>
+    <li>A <b>Supabase function</b> checks each row: insert if new, skip if identical, log if different, record a failure if invalid.</li>
+    <li>The run is logged in <code>archive_sync_log</code> and <code>archive_sync_control</code>.</li>
+  </ol>
+  <h3>Why it's built this way</h3>
+  <table>
+    <tr><th>Choice</th><th>Reason</th></tr>
+    <tr><td>Google Apps Script</td><td>Runs inside the spreadsheet the client already uses. No server, no extra cost.</td></tr>
+    <tr><td>Private <code>archive</code> schema</td><td>Not reachable through Supabase's public API. Only the secret service_role key can write.</td></tr>
+    <tr><td>Checks run inside Supabase</td><td>The rules (types, IDs, insert/skip/change) live in one place. The script stays simple.</td></tr>
+    <tr><td>One table per sheet, same column names</td><td>The first goal is to preserve history faithfully. Reshaping data for reports can come later.</td></tr>
+    <tr><td>No foreign keys between tables</td><td>Old history arrives in any order and may reference rows that were cleaned up. Links are checked and reported, not enforced.</td></tr>
+  </table>
+</section>
+
+<!-- 3 -->
+<section id="files">
+  <h2>Files</h2>
+  <table>
+    <tr><th>File</th><th>What it is</th><th>Where it runs</th></tr>
+    <tr><td><code>supabase/migrations/20261007000000_archive_schema.sql</code></td><td>Creates schema <code>archive</code>, the 40 data tables, control tables and the sheet registry</td><td>Supabase SQL Editor, once</td></tr>
+    <tr><td><code>supabase/migrations/20261012000000_archive_transfer_rpc.sql</code></td><td>Transfer functions the script calls; ID settings per sheet</td><td>Supabase SQL Editor, once</td></tr>
+    <tr><td><code>supabase/migrations/20261012010000_archive_maintenance.sql</code></td><td>Header map, new-table helper, apply-accepted-changes, blank cells excluded from fingerprints</td><td>Supabase SQL Editor, once (safe to rerun)</td></tr>
+    <tr><td><code>apps-script/ArchiveTransfer.gs</code></td><td>Archive menu, sheet reader, value conversion, batching</td><td>Pasted into the Archive spreadsheet's Apps Script</td></tr>
+    <tr><td><code>docs/MAINTENANCE.md</code></td><td>Step-by-step responses to sheet changes</td><td>Reference</td></tr>
+    <tr><td><code>understanding.md</code></td><td>Project notes, decisions and known data issues</td><td>Reference</td></tr>
+  </table>
+  <div class="note">Whenever you change the database, save the SQL as a new dated file in <code>supabase/migrations/</code>. That folder is the record of what the database looks like.</div>
+</section>
+
+<!-- 4 -->
+<section id="setup">
+  <h2>First-time setup</h2>
+
+  <h3>A. Supabase</h3>
+  <ol class="steps">
+    <li>Open the project → <b>SQL Editor</b> → <b>New query</b>.</li>
+    <li>Paste and run <code>20261007000000_archive_schema.sql</code>. If the RLS warning appears, choose <b>Run and enable RLS</b>. <span class="pill">already done</span></li>
+    <li>New query: paste and run <code>20261012000000_archive_transfer_rpc.sql</code>.</li>
+    <li>New query: paste and run <code>20261012010000_archive_maintenance.sql</code>.</li>
+    <li>Check: Table Editor → schema dropdown → <b>archive</b>. You should see the empty tables and <code>archive_sync_control</code> with 40 rows.</li>
+  </ol>
+
+  <h3>B. Keys</h3>
+  <p>Go to <b>Project Settings → API</b> (or <b>API Keys</b>) and note:</p>
+  <table>
+    <tr><th>Value</th><th>Looks like</th></tr>
+    <tr><td>Project URL</td><td><code>https://xxxxxxxx.supabase.co</code></td></tr>
+    <tr><td>service_role key (may be under "Legacy API keys")</td><td>A long string starting with <code>eyJ</code></td></tr>
+  </table>
+  <div class="stop">The service_role key can read and write everything. Never put it in a sheet cell, chat or email. The anon/publishable key will not work, on purpose.</div>
+
+  <h3>C. Google Sheet</h3>
+  <ol class="steps">
+    <li>Open the <b>live</b> Neulight OMS Archive Google Sheet (not an xlsx copy).</li>
+    <li><b>Extensions → Apps Script</b>. Replace <code>Code.gs</code> with the contents of <code>apps-script/ArchiveTransfer.gs</code>. Save.</li>
+    <li>Gear icon (<b>Project Settings</b>) → <b>Time zone</b> → <code>(GMT+08:00) Manila</code>.</li>
+    <li>On the same page, <b>Script properties</b>: add <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code>. Save. Do not put the key in a cell or in the script file.</li>
+    <li>Close the Apps Script tab. Reload the spreadsheet. An <b>Archive</b> menu appears.</li>
+    <li><b>Archive → Test connection</b>. Approve Google's permission prompt (<i>Advanced → Go to … → Allow</i>). You should see "Connected" and the list of enabled sheets.</li>
+  </ol>
+</section>
+
+<!-- 5 -->
+<section id="running">
+  <h2>Running transfers</h2>
+  <h3>Archive menu</h3>
+  <table>
+    <tr><th>Menu item</th><th>What it does</th></tr>
+    <tr><td>Test connection</td><td>Lists enabled sheets from Supabase</td></tr>
+    <tr><td>Dry run products</td><td>Checks every row and reports counts. Saves nothing except a log entry.</td></tr>
+    <tr><td>Transfer products</td><td>Real transfer for the <code>products</code> tab</td></tr>
+    <tr><td>Dry run one sheet… / Transfer one sheet…</td><td>Same, for any tab (including orders). Leave the name blank to use the tab you're on.</td></tr>
+    <tr><td>Transfer all enabled sheets</td><td>Every enabled sheet in load order. Stops at the first sheet that ends PARTIAL or FAILED.</td></tr>
+  </table>
+
+  <h3>Recommended first run</h3>
+  <ol class="steps">
+    <li><b>Dry run products</b>. Expect about 134 read, 134 inserted, 0 failed. (In a dry run, "inserted" means "would insert".)</li>
+    <li><b>Transfer products</b>. Then check Table Editor → <code>archive.products</code>.</li>
+    <li><b>Transfer products</b> again. Expect 0 inserted, 134 skipped. This proves reruns are safe.</li>
+    <li>For another tab (for example orders): <b>Dry run one sheet…</b>, then <b>Transfer one sheet…</b>.</li>
+    <li><b>Transfer all enabled sheets</b>. Repeat until every sheet reports SUCCESS.</li>
+  </ol>
+
+  <h3>Run results</h3>
+  <table>
+    <tr><th>Status</th><th>Meaning</th><th>Action</th></tr>
+    <tr><td><code>SUCCESS</code></td><td>Every row was inserted, skipped or logged as changed</td><td>None</td></tr>
+    <tr><td><code>PARTIAL</code> – time limit</td><td>Stopped before Google's 6-minute limit</td><td>Run the same item again; it continues</td></tr>
+    <tr><td><code>PARTIAL</code> – rows failed</td><td>Some rows were rejected</td><td>Check <code>archive_row_failures</code></td></tr>
+    <tr><td><code>FAILED</code></td><td>The sheet couldn't be read or a request failed</td><td>Read the error; see <a href="#troubleshooting">Troubleshooting</a></td></tr>
+  </table>
+</section>
+
+<!-- 6 -->
+<section id="matching">
+  <h2>How rows are matched</h2>
+  <p>Each sheet has an ID rule in <code>archive_sync_control</code> (<code>key_mode</code> and <code>key_columns</code>). For each row coming from the sheet:</p>
+  <table>
+    <tr><th>Situation</th><th>Result</th><th>Stored row</th></tr>
+    <tr><td>ID not stored yet</td><td><b>inserted</b></td><td>Created</td></tr>
+    <tr><td>ID stored, same values</td><td><b>skipped</b></td><td>Unchanged; <code>_last_seen_at</code> updated</td></tr>
+    <tr><td>ID stored, different values</td><td><b>changed</b></td><td>Unchanged; sheet version saved in <code>archive_row_changes</code></td></tr>
+    <tr><td>ID blank, duplicate in batch, or value doesn't fit the column</td><td><b>failed</b></td><td>Nothing saved; reason in <code>archive_row_failures</code></td></tr>
+  </table>
+
+  <h3>ID rules</h3>
+  <table>
+    <tr><th><code>key_mode</code></th><th>How a row is identified</th><th>Used by</th></tr>
+    <tr><td><code>pk</code></td><td>One ID column</td><td>Most sheets</td></tr>
+    <tr><td><code>composite</code></td><td>2–3 columns together</td><td><code>promo_pack_components</code>, <code>api_tokens</code></td></tr>
+    <tr><td><code>wallet</code></td><td><code>wallet_txn_id</code> when filled; otherwise the row's content</td><td><code>wallet_transactions</code> (about 2,000 rows have no ID)</td></tr>
+    <tr><td><code>hash</code></td><td>The row's content only. An edited row becomes a new row.</td><td><code>missing_data</code>, dashboard sheets</td></tr>
+  </table>
+
+  <h3>The fingerprint</h3>
+  <p>Every stored row has <code>_row_hash</code>: a SHA-256 of its <b>non-blank</b> values after conversion. Comparing fingerprints is how "same" and "different" are decided. Because blank cells are left out, adding an empty column to a sheet doesn't make stored rows look changed.</p>
+</section>
+
+<!-- 7 -->
+<section id="conversion">
+  <h2>How values are converted</h2>
+  <table>
+    <tr><th>Column type</th><th>Taken from</th><th>Rule</th></tr>
+    <tr><td><code>text</code> (IDs, codes, names)</td><td>What the cell displays</td><td>Long numeric IDs stored as numbers in Sheets are rounded by Google; the displayed text is the closest to the original</td></tr>
+    <tr><td><code>numeric(18,4)</code> money, quantities</td><td>The cell's stored number</td><td>Not the formatted display, so currency signs or decimal formatting can't change the value. Text cells are stripped to digits, <code>.</code> and <code>-</code></td></tr>
+    <tr><td><code>integer</code></td><td>The cell's stored number</td><td>Decimals are cut off</td></tr>
+    <tr><td><code>timestamptz</code> dates</td><td>Date cells</td><td>Read as Philippine time (UTC+8) and stored as an exact moment</td></tr>
+    <tr><td><code>boolean</code></td><td>Checkbox or text</td><td>TRUE/FALSE, Y/N, yes/no, 1/0, t/f. Anything else fails the row</td></tr>
+    <tr><td><code>jsonb</code></td><td>Cell text</td><td>Parsed as JSON; invalid JSON fails the row</td></tr>
+    <tr><td><code>packing_duration_seconds</code></td><td>Number or time</td><td>Times like <code>0:01:07</code> become seconds (67)</td></tr>
+  </table>
+  <ul>
+    <li><b>Blank cells</b> become NULL, never an empty string.</li>
+    <li><b>Blank rows</b> are skipped.</li>
+    <li><b>Header renames</b> come from <code>archive_header_map</code>. Current: <code>BRAND</code> → <code>brand</code>, <code>P60 days</code> → <code>p60_days</code>, <code>Emoji</code> → <code>emoji</code>.</li>
+    <li><b>Unnamed columns</b>: the two blank headers in <code>wallet_transactions</code> go to <code>unnamed_col_ab</code> and <code>unnamed_col_ac</code>.</li>
+    <li><b>Secrets</b>: <code>access_token</code>, <code>refresh_token</code>, <code>app_key</code>, <code>app_secret</code>, <code>shop_cipher</code> and <code>main_account_id</code> are dropped before anything is sent.</li>
+  </ul>
+</section>
+
+<!-- 8 -->
+<section id="tables">
+  <h2>Table reference</h2>
+  <p>All tables are in schema <code>archive</code>. Row counts are from the live workbook on 2026-10-07.</p>
+  <table>
+    <tr><th>Order</th><th>Sheet</th><th>Group</th><th>ID</th><th>Rows</th><th>State</th></tr>
+    <tr><td>10</td><td><code>products</code></td><td>B</td><td><code>sku_code</code></td><td>134</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>11</td><td><code>suppliers</code></td><td>B</td><td><code>supplier_code</code></td><td>5</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>12</td><td><code>warehouses</code></td><td>B</td><td><code>warehouse_code</code></td><td>4</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>13</td><td><code>couriers</code></td><td>B</td><td><code>courier_code</code></td><td>7</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>14</td><td><code>users</code></td><td>B</td><td><code>user_id</code></td><td>1</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>15</td><td><code>packing_stations</code></td><td>B</td><td><code>station_id</code></td><td>5</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>16</td><td><code>promo_pack_components</code></td><td>B</td><td><code>promo_sku</code> + <code>component_sku</code></td><td>13</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>17</td><td><code>sku_derivative_rules</code></td><td>B</td><td><code>suffix</code></td><td>8</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>18</td><td><code>oms_status_mapping</code></td><td>B</td><td><code>platform_status</code></td><td>32</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>19</td><td><code>forecast_baseline</code></td><td>B</td><td><code>sku_code</code></td><td>151</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>20</td><td><code>inventory_balance</code></td><td>B</td><td><code>inventory_balance_id</code></td><td>139</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>30</td><td><code>orders</code></td><td>A</td><td><code>platform_order_id</code></td><td>14,327</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>31</td><td><code>order_lines</code></td><td>A</td><td><code>order_line_id</code></td><td>15,318</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>32</td><td><code>reservations</code></td><td>A</td><td><code>reservation_id</code></td><td>8,333</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>33</td><td><code>inventory_ledger</code></td><td>A</td><td><code>ledger_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>34</td><td><code>packing_events</code></td><td>A</td><td><code>packing_event_id</code></td><td>9,776</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>35</td><td><code>turnover_lines</code></td><td>A</td><td><code>turnover_line_id</code></td><td>7,235</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>36</td><td><code>oms_status_history</code></td><td>A</td><td><code>history_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>40</td><td><code>wallet_statements</code></td><td>A</td><td><code>statement_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>41</td><td><code>wallet_transactions</code></td><td>A</td><td><code>wallet_txn_id</code>, else content</td><td>9,865</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>42</td><td><code>wallet_transactions_lines</code></td><td>A</td><td><code>wallet_transaction_line_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>50</td><td><code>returns</code></td><td>A</td><td><code>return_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>51</td><td><code>return_lines</code></td><td>A</td><td><code>return_line_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>60</td><td><code>product_cost_history</code></td><td>A</td><td><code>cost_record_id</code></td><td>151</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>61</td><td><code>goods_receipts</code></td><td>A</td><td><code>gr_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>62</td><td><code>goods_receipt_lines</code></td><td>A</td><td><code>gr_line_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>63</td><td><code>supply_purchases</code></td><td>A</td><td><code>purchase_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>64</td><td><code>supply_counts</code></td><td>A</td><td><code>count_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>65</td><td><code>missing_data</code></td><td>A</td><td>content</td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>66</td><td><code>job_execution_log</code></td><td>A</td><td><code>job_execution_id</code></td><td>0</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>70</td><td><code>device_settings</code></td><td>C</td><td><code>device_name</code></td><td>9</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>71</td><td><code>financial_settings</code></td><td>C</td><td><code>setting_key</code></td><td>4</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>72</td><td><code>platform_settings</code></td><td>C</td><td><code>platform</code></td><td>3</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>73</td><td><code>system_settings</code></td><td>C</td><td><code>setting_name</code></td><td>53</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>74</td><td><code>system_messages</code></td><td>C</td><td><code>message_id</code></td><td>9</td><td><span class="pill on">on</span></td></tr>
+    <tr><td>80</td><td><code>warehouse_admin_bucket</code></td><td>D</td><td>content</td><td>10</td><td><span class="pill off">off</span></td></tr>
+    <tr><td>81</td><td><code>warehouse_dashboard</code></td><td>D</td><td>content</td><td>1</td><td><span class="pill off">off</span></td></tr>
+    <tr><td>82</td><td><code>warehouse_dashboard_work</code></td><td>D</td><td>content</td><td>12</td><td><span class="pill off">off</span></td></tr>
+    <tr><td>90</td><td><code>reservations_historical_recover</code></td><td>X</td><td><code>reservation_id</code></td><td>13,451</td><td><span class="pill off">off</span></td></tr>
+    <tr><td>99</td><td><code>api_tokens</code> → <code>api_tokens_metadata</code></td><td>Security</td><td><code>platform</code> + <code>store_id</code> + <code>shop_id</code></td><td>6</td><td><span class="pill off">off</span></td></tr>
+  </table>
+  <p><b>Groups:</b> A = transaction history (priority), B = master/reference, C = settings snapshots, D = dashboard snapshots, X = extra sheet pending confirmation.</p>
+
+  <h3>Bookkeeping columns on every table</h3>
+  <table>
+    <tr><th>Column</th><th>Meaning</th></tr>
+    <tr><td><code>_row_hash</code></td><td>Fingerprint of the row's values</td></tr>
+    <tr><td><code>_source_file</code></td><td>Spreadsheet name the row came from</td></tr>
+    <tr><td><code>_execution_id</code></td><td>Run that first inserted the row (<code>archive_sync_log</code>)</td></tr>
+    <tr><td><code>_loaded_at</code></td><td>When the row was first inserted</td></tr>
+    <tr><td><code>_last_seen_at</code></td><td>Last run that found the identical row in the sheet</td></tr>
+  </table>
+</section>
+
+<!-- 9 -->
+<section id="control">
+  <h2>Control tables</h2>
+  <table>
+    <tr><th>Table</th><th>Purpose</th></tr>
+    <tr><td><code>archive_sync_control</code></td><td>One row per sheet: on/off, load order, ID rule, last run status and counts</td></tr>
+    <tr><td><code>archive_sync_log</code></td><td>One row per run per sheet: mode, start/finish, counts, error</td></tr>
+    <tr><td><code>archive_row_changes</code></td><td>Sheet rows that differ from the stored version. <code>resolution</code>: PENDING, ACCEPTED, REJECTED. <code>applied_at</code> set when an accepted change is copied in</td></tr>
+    <tr><td><code>archive_row_failures</code></td><td>Rows that couldn't be saved, with the reason and the raw row</td></tr>
+    <tr><td><code>archive_header_map</code></td><td>Sheet header → column, per sheet. <code>target_column</code> null means ignore</td></tr>
+  </table>
+
+  <h3>Functions</h3>
+  <table>
+    <tr><th>Function</th><th>Called by</th><th>Purpose</th></tr>
+    <tr><td><code>public.archive_list_sheets</code></td><td>Script</td><td>Enabled sheets in load order</td></tr>
+    <tr><td><code>public.archive_sheet_contract</code></td><td>Script</td><td>Columns, types, ID rule, header map for one sheet</td></tr>
+    <tr><td><code>public.archive_begin_run</code></td><td>Script</td><td>Opens a log entry</td></tr>
+    <tr><td><code>public.archive_apply_batch</code></td><td>Script</td><td>Checks and saves up to 150 rows</td></tr>
+    <tr><td><code>public.archive_finish_run</code></td><td>Script</td><td>Closes the log entry, updates <code>archive_sync_control</code></td></tr>
+    <tr><td><code>archive.prepare_archive_table</code></td><td>You, SQL Editor</td><td>Adds bookkeeping columns and locks down a new table</td></tr>
+    <tr><td><code>archive.apply_accepted_changes</code></td><td>You, SQL Editor</td><td>Copies ACCEPTED changes into the archive table</td></tr>
+  </table>
+</section>
+
+<!-- 10 -->
+<section id="monitoring">
+  <h2>Checking results</h2>
+  <p>Run these in Supabase SQL Editor.</p>
+
+  <h3>Status per sheet</h3>
+<pre><code>select source_table, enabled, last_status, last_run_datetime,
+       rows_read, rows_inserted, rows_skipped, rows_changed, rows_failed, last_error
+from archive.archive_sync_control
+order by load_order;</code></pre>
+
+  <h3>Recent runs</h3>
+<pre><code>select execution_id, source_table, run_mode, status, started_at, duration_seconds,
+       rows_read, rows_inserted, rows_skipped, rows_changed, rows_failed, error_message
+from archive.archive_sync_log
+order by started_at desc
+limit 30;</code></pre>
+
+  <h3>Failed rows</h3>
+<pre><code>select source_table, source_row_number, row_key, failure_reason, detected_at
+from archive.archive_row_failures
+order by detected_at desc
+limit 50;</code></pre>
+
+  <h3>Changes waiting for review</h3>
+<pre><code>select source_table, count(*) as pending
+from archive.archive_row_changes
+where resolution = 'PENDING' and applied_at is null
+group by source_table;</code></pre>
+
+  <h3>Stored row count vs sheet</h3>
+<pre><code>select 'orders' as sheet, count(*) from archive.orders
+union all select 'order_lines', count(*) from archive.order_lines
+union all select 'wallet_transactions', count(*) from archive.wallet_transactions;</code></pre>
+  <p>Stored counts can be higher than the sheet once the archive process has cleaned old rows from the sheet. That's expected: the archive keeps them.</p>
+</section>
+
+<!-- 11 -->
+<section id="maintenance">
+  <h2>Maintenance</h2>
+  <p>Full step-by-step instructions are in <code>docs/MAINTENANCE.md</code>. Summary:</p>
+
+  <div class="note">The script reads columns and the header map from Supabase on every run. <b>Most changes happen in Supabase only.</b> Always dry run the affected sheet afterwards, and save your SQL as a new file in <code>supabase/migrations/</code>.</div>
+
+  <table>
+    <tr><th>Change in the sheet</th><th>Supabase</th><th>Script</th></tr>
+    <tr><td>Header renamed</td><td>Add a row to <code>archive_header_map</code>. Don't rename the column</td><td>Nothing</td></tr>
+    <tr><td>Column added, to archive</td><td><code>alter table … add column</code> (+ header map if the name differs)</td><td>Nothing</td></tr>
+    <tr><td>Column added, not wanted</td><td>Header map row with <code>target_column = null</code></td><td>Nothing</td></tr>
+    <tr><td>Column removed</td><td>Nothing. Never drop the column. Accept + apply the resulting changes</td><td>Nothing</td></tr>
+    <tr><td>Column type changed</td><td>Fix the cell, or widen the type (usually to <code>text</code>)</td><td>Nothing</td></tr>
+    <tr><td>New tab</td><td>Create table → <code>prepare_archive_table</code> → register in <code>archive_sync_control</code></td><td>Nothing</td></tr>
+    <tr><td>Tab renamed</td><td>Rename it back, or update <code>source_table</code> in the registry and header map</td><td>Nothing</td></tr>
+    <tr><td>Tab deleted</td><td>Set <code>enabled = false</code>. Never drop the table</td><td>Nothing</td></tr>
+    <tr><td>Unnamed wallet columns get names</td><td>Map the names to <code>unnamed_col_ab</code> / <code>unnamed_col_ac</code></td><td>Nothing</td></tr>
+    <tr><td>New sensitive column</td><td>Header map row with <code>target_column = null</code></td><td>Nothing</td></tr>
+  </table>
+
+  <details>
+    <summary>Header renamed</summary>
+<pre><code>insert into archive.archive_header_map (source_table, source_header, target_column, note)
+values ('orders', 'Order Date', 'order_date', 'Renamed in sheet');</code></pre>
+  </details>
+
+  <details>
+    <summary>Column added</summary>
+<pre><code>alter table archive.orders add column delivery_partner text;
+
+-- only if the header isn't exactly the column name
+insert into archive.archive_header_map (source_table, source_header, target_column)
+values ('orders', 'Delivery Partner', 'delivery_partner');</code></pre>
+    <p>Stored rows whose new cell is blank are skipped. Rows whose new cell has a value are logged as changed. Accept and apply them to copy the values in.</p>
+  </details>
+
+  <details>
+    <summary>Ignore a column</summary>
+<pre><code>insert into archive.archive_header_map (source_table, source_header, target_column, note)
+values ('orders', 'temp_calc', null, 'Helper column, not archived');</code></pre>
+  </details>
+
+  <details>
+    <summary>New tab</summary>
+<pre><code>create table archive.courier_rates (
+  rate_id        text primary key,
+  courier_code   text,
+  rate           numeric(18,4),
+  effective_date timestamptz
+);
+
+select archive.prepare_archive_table('courier_rates');
+
+insert into archive.archive_sync_control
+  (source_table, target_table, table_group, load_order, enabled, key_mode, key_columns)
+values
+  ('courier_rates', 'courier_rates', 'B', 21, true, 'pk', array['rate_id']);</code></pre>
+    <p>For a sheet with no reliable ID, use <code>archive_row_id bigint generated always as identity primary key</code>, <code>key_mode 'hash'</code>, <code>key_columns array[]::text[]</code>, and add <code>create unique index … on archive.&lt;table&gt; (_row_hash);</code></p>
+  </details>
+
+  <details>
+    <summary>Accept and apply changes</summary>
+<pre><code>update archive.archive_row_changes
+set resolution = 'ACCEPTED', resolved_at = now(), resolved_by = 'ethan'
+where source_table = 'orders' and resolution = 'PENDING';
+
+select archive.apply_accepted_changes('orders');</code></pre>
+    <p>Applying copies sheet values into the stored row, never erases a stored value, never changes the ID, and refreshes the fingerprint so the next run skips the row.</p>
+  </details>
+
+  <details>
+    <summary>Turn a sheet on or off</summary>
+<pre><code>update archive.archive_sync_control set enabled = true
+where source_table = 'reservations_historical_recover';</code></pre>
+  </details>
+
+  <h3>Choosing a column type</h3>
+  <table>
+    <tr><th>Sheet content</th><th>Type</th></tr>
+    <tr><td>IDs, codes, names, statuses, leading zeros, more than 15 digits</td><td><code>text</code></td></tr>
+    <tr><td>Money, prices, fees, weights, quantities</td><td><code>numeric(18,4)</code></td></tr>
+    <tr><td>Whole counts</td><td><code>integer</code></td></tr>
+    <tr><td>Dates, date and time</td><td><code>timestamptz</code></td></tr>
+    <tr><td>TRUE/FALSE, Y/N</td><td><code>boolean</code></td></tr>
+    <tr><td>JSON</td><td><code>jsonb</code></td></tr>
+  </table>
+  <p>When unsure, use <code>text</code>.</p>
+
+  <div class="stop">
+    <b>Never:</b> drop an archive table or column that has data · rename a column to match a renamed header · change <code>key_columns</code> on a table with rows · edit stored rows by hand in Table Editor.
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="troubleshooting">
+  <h2>Troubleshooting</h2>
+  <table>
+    <tr><th>Message</th><th>Cause</th><th>Fix</th></tr>
+    <tr><td><code>Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY…</code></td><td>No saved URL or key</td><td>Add them in Apps Script Project Settings → Script properties</td></tr>
+    <tr><td><code>401</code> / <code>Invalid API key</code></td><td>anon/publishable key, or a rotated key</td><td>Use the service_role key</td></tr>
+    <tr><td><code>404</code> on <code>archive_*</code></td><td>Transfer SQL not run</td><td>Run the migrations</td></tr>
+    <tr><td><code>No sheet named X</code></td><td>Tab renamed or deleted</td><td>Rename back, or update the registry</td></tr>
+    <tr><td><code>has headers with no column</code></td><td>New or renamed header</td><td>Add the column or a header map row</td></tr>
+    <tr><td><code>missing key column</code></td><td>ID header renamed or removed</td><td>Map the header to the ID column</td></tr>
+    <tr><td><code>Duplicate header for X</code></td><td>Two headers map to the same column</td><td>Fix the sheet or header map</td></tr>
+    <tr><td><code>Unknown archive sheet</code></td><td>Not in <code>archive_sync_control</code></td><td>Register it</td></tr>
+    <tr><td><code>is turned off in archive_sync_control</code></td><td><code>enabled = false</code></td><td>Turn it on</td></tr>
+    <tr><td><code>invalid input syntax for type …</code></td><td>Value doesn't fit the column</td><td>Fix the cell or widen the type</td></tr>
+    <tr><td><code>expects true/false</code></td><td>Unrecognised boolean</td><td>Fix the cell, or change the column to <code>text</code></td></tr>
+    <tr><td><code>missing key</code></td><td>Blank ID cell</td><td>Fill the ID</td></tr>
+    <tr><td><code>duplicate key in this batch</code></td><td>Same ID twice in the sheet</td><td>Remove the duplicate</td></tr>
+    <tr><td><code>Stopped before the Apps Script time limit</code></td><td>Large sheet</td><td>Run again</td></tr>
+    <tr><td>Archive menu missing</td><td>Script not saved, or sheet not reloaded</td><td>Save in Apps Script, reload the spreadsheet</td></tr>
+    <tr><td>Project paused</td><td>Free plan, about a week of low activity</td><td>Restore from the Supabase dashboard; run transfers regularly</td></tr>
+  </table>
+</section>
+
+<!-- 13 -->
+<section id="security">
+  <h2>Security</h2>
+  <ul>
+    <li>Schema <code>archive</code> is not exposed through the Supabase Data API. Row Level Security is on for every table with no policies, and the <code>anon</code> and <code>authenticated</code> roles have no access.</li>
+    <li>The script's functions can only be called with the <b>service_role</b> key.</li>
+    <li>The key is stored in Apps Script <b>Script Properties</b>, which aren't visible in the sheet. Anyone who can edit the script can read it, so limit editor access to the Archive spreadsheet.</li>
+    <li>If the key is exposed, rotate it in Supabase (Project Settings → API) and update <code>SUPABASE_SERVICE_ROLE_KEY</code> in Apps Script Project Settings → Script properties.</li>
+    <li><code>api_tokens</code> secrets are never sent. The sheet is off by default; only metadata (platform, store, shop, expiry dates) is stored if enabled.</li>
+  </ul>
+</section>
+
+<!-- 14 -->
+<section id="limits">
+  <h2>Limits</h2>
+  <table>
+    <tr><th>Limit</th><th>Value</th><th>Effect</th></tr>
+    <tr><td>Apps Script run time</td><td>6 minutes per run</td><td>The script stops at 4.5 minutes and reports PARTIAL; run again</td></tr>
+    <tr><td>Apps Script URL Fetch</td><td>20,000 calls/day (personal Google account), 100,000 (Workspace)</td><td>One call per 150 rows; the current sheet needs a few hundred</td></tr>
+    <tr><td>Supabase Free database size</td><td>500 MB</td><td>Becomes read-only when exceeded; upgrade to Pro</td></tr>
+    <tr><td>Supabase Free pausing</td><td>About 1 week of low activity</td><td>Run transfers at least weekly, or upgrade</td></tr>
+    <tr><td>Supabase Free backups</td><td>None</td><td>Pro adds 7 days of daily backups</td></tr>
+    <tr><td>Supabase Pro</td><td>$25/month, 8 GB disk included</td><td>Same project, no data lost when upgrading</td></tr>
+  </table>
+  <div class="warn">Scheduled automatic runs are not set up yet. The script uses pop-up messages, which don't work in time-based triggers. Run transfers from the menu until a trigger-safe version is added.</div>
+</section>
+
+<!-- 15 -->
+<section id="glossary">
+  <h2>Glossary</h2>
+  <table>
+    <tr><th>Term</th><th>Meaning</th></tr>
+    <tr><td>Archive sheet</td><td>The Neulight OMS Archive Google Spreadsheet; the source</td></tr>
+    <tr><td>Archive table</td><td>A table in Supabase schema <code>archive</code>; the destination</td></tr>
+    <tr><td>Dry run</td><td>A check that reports what would happen without saving rows</td></tr>
+    <tr><td>Fingerprint</td><td><code>_row_hash</code>, used to tell whether a row changed</td></tr>
+    <tr><td>Header map</td><td><code>archive_header_map</code>; links sheet headers to columns when the names differ</td></tr>
+    <tr><td>ID / key</td><td>The column(s) that identify a row (<code>key_columns</code>)</td></tr>
+    <tr><td>Load order</td><td>The order "Transfer all" processes sheets: masters before orders before wallets</td></tr>
+    <tr><td>Migration</td><td>A <code>.sql</code> file in <code>supabase/migrations/</code> that changes the database</td></tr>
+    <tr><td>Registry</td><td><code>archive_sync_control</code>; the list of sheets the script knows about</td></tr>
+    <tr><td>service_role key</td><td>Supabase's full-access secret key</td></tr>
+  </table>
+</section>
+
+</main>
+
+<script>
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var btn = document.createElement('button');
+    btn.className = 'copy';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(pre.querySelector('code').innerText).then(function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
+      });
+    });
+    pre.appendChild(btn);
+  });
+</script>
+</body>
+</html>
